@@ -2,6 +2,9 @@ use std::iter::FusedIterator;
 
 use crate::HintSize;
 
+#[cfg(doc)]
+use crate::*;
+
 /// Extension trait for [`Iterator`] and [`FusedIterator`] to create iterators with custom
 /// [`Iterator::size_hint`] and/or [`ExactSizeIterator::len`] implementations.
 #[sealed::sealed]
@@ -80,7 +83,7 @@ pub trait SizeHinter: Iterator + Sized {
     ///
     /// It is the caller's responsibility to ensure that `len` accurately represents the
     /// number of elements remaining in the iterator. This can be a performance
-    /// *pessimization* if the iterator already implements [`TrustedLen`], even if it does
+    /// *pessimization* if the iterator already implements `TrustedLen`, even if it does
     /// not implement [`ExactSizeIterator`] (for example, [`std::iter::Chain`]). See
     /// [`ExactLen::new`] for more details.
     ///

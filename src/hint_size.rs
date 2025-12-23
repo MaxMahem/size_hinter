@@ -1,7 +1,7 @@
 use std::iter::FusedIterator;
 
 #[cfg(doc)]
-use crate::ExactLen;
+use crate::*;
 
 /// A size hint for an iterator.
 pub type SizeHint = (usize, Option<usize>);
