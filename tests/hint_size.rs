@@ -5,13 +5,14 @@ use common::*;
 
 use std::ops::Range;
 
-use size_hinter::{SizeHinter, UNIVERSAL_SIZE_HINT};
+use size_hinter::{HintSize, SizeHinter, UNIVERSAL_SIZE_HINT};
 
 const TEST_ITER: Range<usize> = 1..5;
 
 test_size_hint!(basic_hint, TEST_ITER.hint_size(3, 5), (3, Some(5)));
 test_size_hint!(min_hint, TEST_ITER.hint_min(2), (2, None));
 test_size_hint!(hidden_hint, TEST_ITER.hide_size(), (0, None));
+test_size_hint!(default_hint, HintSize::<Range<usize>>::default(), UNIVERSAL_SIZE_HINT);
 
 test_iter_hint_state!(
     forward_iter,

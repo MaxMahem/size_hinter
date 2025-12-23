@@ -1,5 +1,8 @@
 use std::iter::FusedIterator;
 
+#[cfg(doc)]
+use crate::ExactLen;
+
 /// A size hint for an iterator.
 pub type SizeHint = (usize, Option<usize>);
 
@@ -14,7 +17,7 @@ pub const UNIVERSAL_SIZE_HINT: SizeHint = (0, None);
 ///
 /// In some cases using this adaptor may allow for optimization, though if an exact length is
 /// known it is recommended to use [`ExactLen`] instead. Using this adaptor to wrap an iterator
-/// that implements [`ExactSizeIterator`] or [`TrustedLen`] may lead to performance penalties.
+/// that implements [`ExactSizeIterator`] or `TrustedLen` may lead to performance penalties.
 ///
 /// Note this type is readonly. The field values may be read, but not modified.
 ///
@@ -54,7 +57,7 @@ pub const UNIVERSAL_SIZE_HINT: SizeHint = (0, None);
 /// assert_eq!(iter.next(), Some(1), "Underlying iterator is not changed");
 /// assert_eq!(iter.size_hint(), (2, Some(5)), "Size hint reflects the new state");
 /// ```
-#[derive(Debug, Clone)]
+#[derive(Debug, Default, Clone)]
 #[readonly::make]
 pub struct HintSize<I: Iterator> {
     /// The underlying iterator.
