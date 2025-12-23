@@ -1,0 +1,17 @@
+[package]
+name = "size_hinter"
+version = "0.1.0"
+edition = "2024"
+description = "Iterator adaptors allowing overiding or specifying size_hint."
+repository = "https://github.com/MaxMahem/size_hinter"
+documentation = "https://docs.rs/size_hinter"
+homepage = "https://github.com/MaxMahem/size_hinter"
+license = "MIT OR Apache-2.0"
+authors = [ "Austin Stanley <MaxTMahem@gmail.com>" ]
+readme = "README.md"
+keywords = ["iterator", "size-hint", "exact-size", "adaptor"]
+categories = ["rust-patterns"]
+
+[dependencies]
+readonly = "0.2.13"
+sealed = "0.6.0"
