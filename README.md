@@ -1,4 +1,4 @@
-# size_hinter
+# `size_hinter`
 
 [![Build](https://github.com/MaxMahem/size_hinter/actions/workflows/build.yml/badge.svg)](https://github.com/MaxMahem/size_hinter/actions/workflows/build.yml)
 [![Docs](https://github.com/MaxMahem/size_hinter/actions/workflows/docs.yml/badge.svg)](https://MaxMahem.github.io/size_hinter/size_hinter/index.html)
