@@ -14,6 +14,12 @@ test_size_hint!(min_hint, TEST_ITER.hint_min(2), (2, None));
 test_size_hint!(hidden_hint, TEST_ITER.hide_size(), (0, None));
 test_size_hint!(default_hint, HintSize::<Range<usize>>::default(), UNIVERSAL_SIZE_HINT);
 
+#[test]
+#[should_panic(expected = "Invalid size hint: lower_bound (5) must be <= upper_bound (3)")]
+fn invalid_hint() {
+    _ = TEST_ITER.hint_size(5, 3);
+}
+
 test_iter_hint_state!(
     forward_iter,
     TEST_ITER.hint_size(4, 6) => hint: (4, Some(6)),

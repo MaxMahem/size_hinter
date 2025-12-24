@@ -1,8 +1,13 @@
 #![doc = include_str!("../README.md")]
+#![no_std]
+#![forbid(unsafe_code)]
+// lints
 #![warn(clippy::pedantic)]
 #![warn(clippy::nursery)]
 #![warn(clippy::cargo)]
 #![warn(missing_docs)]
+// allowed lints
+#![allow(clippy::match_bool)]
 
 mod exact_len;
 mod hint_size;

@@ -7,7 +7,6 @@ on:
     paths:
       - "src/**"
       - "tests/**"
-      - "examples/**"
       - "Cargo.toml"
       - "Cargo.lock"
       - "build.rs"
@@ -15,7 +14,6 @@ on:
     paths:
       - "src/**"
       - "tests/**"
-      - "examples/**"
       - "Cargo.toml"
       - "Cargo.lock"
       - "build.rs"
