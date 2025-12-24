@@ -1,4 +1,4 @@
-use std::iter::FusedIterator;
+use core::iter::FusedIterator;
 
 #[cfg(doc)]
 use crate::*;
@@ -72,8 +72,13 @@ impl<I: Iterator> HintSize<I> {
     ///
     /// `iterator`'s [`IntoIterator::IntoIter`] must implement [`FusedIterator`] because a meaningful
     /// implementation of [`Iterator::size_hint`] cannot be provided if the iterator is not fused.
+    /// Consider using [`HintSize::min`] for non-fused iterators.
     ///
     /// See [type level documentation](HintSize) for more details.
+    ///
+    /// # Panics
+    ///
+    /// Panics if `lower_bound > upper_bound`.
     ///
     /// # Examples
     ///
@@ -92,6 +97,10 @@ impl<I: Iterator> HintSize<I> {
         II: IntoIterator<IntoIter = I>,
         I: FusedIterator,
     {
+        assert!(
+            lower_bound <= upper_bound,
+            "Invalid size hint: lower_bound ({lower_bound}) must be <= upper_bound ({upper_bound})"
+        );
         Self { iterator: iterator.into_iter(), hint: (lower_bound, Some(upper_bound)) }
     }
 

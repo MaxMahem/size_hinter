@@ -44,7 +44,7 @@ dependencies = [
 
 [[package]]
 name = "size_hinter"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "readonly",
  "sealed",

@@ -1,4 +1,4 @@
-use std::iter::FusedIterator;
+use core::iter::FusedIterator;
 
 /// A [`FusedIterator`] adaptor that provides an exact length via [`ExactSizeIterator`].
 ///
@@ -129,3 +129,5 @@ impl<I: DoubleEndedIterator + FusedIterator> DoubleEndedIterator for ExactLen<I>
         }
     }
 }
+
+impl<I: FusedIterator> FusedIterator for ExactLen<I> {}
