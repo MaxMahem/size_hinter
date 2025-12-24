@@ -1,4 +1,4 @@
-use std::iter::FusedIterator;
+use core::iter::FusedIterator;
 
 use crate::HintSize;
 
@@ -15,6 +15,10 @@ pub trait SizeHinter: Iterator + Sized {
     /// It is the caller's responsibility to ensure that `lower_bound` and `upper_bound`
     /// are valid bounds for the number of elements remaining in the iterator.
     /// See [`HintSize::new`] for more details.
+    ///
+    /// # Panics
+    ///
+    /// Panics if `lower_bound > upper_bound`.
     ///
     /// # Examples
     ///

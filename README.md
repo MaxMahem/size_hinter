@@ -17,6 +17,8 @@ Iterator adaptors for overriding or specifying exact size hints in Rust.
 - **`HintSize`**: Wraps an `Iterator` in an adaptor that provides a custom `Iterator::size_hint()` implementation only. This is primarily useful for implementing a fixed universal size hint `(0, None)` for testing.
 - **`SizeHinter`**: An extension trait for fluently creating these adaptors.
 
+This crate is `no_std` compatible and contains no `unsafe` code.
+
 ## Usage
 
 ### `ExactLen` - Adding Exact Length to Iterators
