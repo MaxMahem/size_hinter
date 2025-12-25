@@ -11,8 +11,10 @@
 
 mod exact_len;
 mod hint_size;
+mod size_hint;
 mod size_hinter;
 
 pub use exact_len::*;
 pub use hint_size::*;
+pub use size_hint::*;
 pub use size_hinter::*;
