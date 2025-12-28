@@ -2,7 +2,8 @@ use core::{iter::FusedIterator, ops::Not};
 
 use fluent_result::bool::Then;
 
-use crate::{InvalidSizeHint, size_hint::SizeHint};
+use crate::InvalidSizeHint;
+use crate::size_hint::SizeHint;
 
 #[cfg(doc)]
 use crate::*;
