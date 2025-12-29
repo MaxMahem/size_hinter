@@ -104,7 +104,7 @@ mod decrement {
 
     transform!(normal, SizeHint::bounded(5, 10), decrement() == (4, Some(9)));
     transform!(saturating_lower, SizeHint::bounded(0, 5), decrement() == (0, Some(4)));
-    transform!(saturating_both, SizeHint::EMPTY, decrement() == SizeHint::EMPTY);
+    transform!(saturating_both, SizeHint::ZERO, decrement() == SizeHint::ZERO);
     transform!(unbounded, SizeHint::unbounded(10), decrement() == (9, None));
     transform!(universal, SizeHint::UNIVERSAL, decrement() == SizeHint::UNIVERSAL);
 }

@@ -11,16 +11,20 @@ pub struct InvalidSizeHint;
 /// `(usize, Option<usize>)`, providing strong gurantees about the bound values
 /// (ie. `lower <= upper`), and additional functionality and conversions.
 ///
-/// A size hint describes the range of possible values for the length of an iterator, where the
-/// lower bound is the inclusive minimum number of elements that the iterator will yield, and the
-/// upper bound is the inclusive maximum number of elements that the iterator will yield, or
-/// `None` if the upper bound is unbounded.
+/// A size hint describes the range of possible values for the length of an iterator, that is, the
+/// number of elements that it will return when enumerated to exhaustion from its current state.
+/// While this count does not have to be *exact* (unless the size hint describes an exact bounds,
+/// one where the upper and lower bounds are equal) it is an error for the iterator to then produce
+/// a number of elements that violates the bounds established by the hint.
+///
+/// A size hint can never describe an empty range, as 0 is always a valid number of elements
+/// remaining for an iterator.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 #[readonly::make]
 pub struct SizeHint {
-    /// The lower bound of the size hint.
+    /// The inclusive lower bound of the size hint.
     pub lower: usize,
-    /// The upper bound of the size hint.
+    /// The inclusive upper bound of the size hint, or `None` if the upper bound is unbounded.
     pub upper: Option<usize>,
 }
 
@@ -28,8 +32,8 @@ impl SizeHint {
     /// A size hint that is always valid, never changes, and conveys no information.
     pub const UNIVERSAL: Self = Self { lower: 0, upper: None };
 
-    /// An empty size hint that indicates that the iterator will yield no elements.
-    pub const EMPTY: Self = Self { lower: 0, upper: Some(0) };
+    /// A size hint that indicates that the iterator will yield no elements.
+    pub const ZERO: Self = Self { lower: 0, upper: Some(0) };
 
     /// Creates a new size hint with the given lower and optional upper bounds.
     ///
