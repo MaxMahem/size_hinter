@@ -11,8 +11,9 @@ Iterator adaptors for overriding or specifying exact size hints in Rust.
 
 ## Overview
 
-`size_hinter` provides two iterator adaptors and an extension trait that allow you to override `Iterator::size_hint()` and/or provide a `ExactSizeIterator` implementation for iterators.
+`size_hinter` provides two iterator adaptors, an extension trait, and a foundational type for working with iterator size hints.
 
+- **`SizeHint`**: An immutable type representing a size hint with strong guarantees about bounds validity (`lower <= upper`), providing additional functionality and conversions.
 - **`ExactLen`**: Wraps an iterator to provide an exact length via `ExactSizeIterator::len()` and a coresponding `Iterator::size_hint()`. This is useful when you know the exact length of an iterator that doesn't normally implement `ExactSizeIterator` (like `Filter`).
 - **`HintSize`**: Wraps an `Iterator` in an adaptor that provides a custom `Iterator::size_hint()` implementation only. This is primarily useful for implementing a fixed universal size hint `(0, None)` for testing.
 - **`SizeHinter`**: An extension trait for fluently creating these adaptors.
@@ -63,7 +64,34 @@ assert_eq!(custom.next(), Some(1), "Underlying iterator is not changed");
 assert_eq!(custom.size_hint(), (0, Some(9)), "Size hint is updated to (0, Some(9))");
 ```
 
-## Performance Considerations
+### `SizeHint` - Working with Size Hints Directly
+
+`SizeHint` is a type-safe wrapper around the standard iterator size hint tuple `(usize, Option<usize>)`. It provides strong guarantees about bound validity and offers additional functionality for working with size hints.
+
+```rust
+use size_hinter::SizeHint;
+
+// Create a bounded size hint (min 2, max 10 elements)
+let hint = SizeHint::bounded(2, 10);
+assert_eq!(hint.lower, 2);
+assert_eq!(hint.upper, Some(10));
+
+// Create an exact size hint
+let exact = SizeHint::exact(5);
+assert_eq!(exact.lower, 5);
+assert_eq!(exact.upper, Some(5));
+
+// Create an unbounded size hint (at least 3 elements, no upper limit)
+let unbounded = SizeHint::unbounded(3);
+assert_eq!(unbounded.lower, 3);
+assert_eq!(unbounded.upper, None);
+
+// Check if two size hints overlap
+assert!(SizeHint::bounded(3, 6).overlaps(SizeHint::bounded(5, 10)));
+assert!(SizeHint::exact(5).disjoint(SizeHint::bounded(10, 20)));
+```
+
+## Adaptor Performance Considerations
 
 Wrapping an iterator that does not provide a detailed size hint or implement `ExactSizeIterator` may allow for some optimizations or performance improvements. However, it may lead to performance penalties if the wrapped iterator already implements `TrustedLen`, even if it does not implement `ExactSizeIterator`. For example, `std::iter::Chain`. Since this adaptor hides that implementation.
 
