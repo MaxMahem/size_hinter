@@ -10,30 +10,31 @@ use crate::*;
 
 /// An [`Iterator`] adaptor that provides a custom [`Iterator::size_hint`] implementation.
 ///
-/// This is most useful for providing a specific [`Iterator::size_hint`] implementation or
-/// hiding an underlying one for testing. The [`Iterator::size_hint`] implementation provided
-/// by this adaptor will change as the iterator is consumed.
-///
-/// In some cases using this adaptor may allow for optimization, though if an exact length is
-/// known it is recommended to use [`ExactLen`] instead. Using this adaptor to wrap an iterator
-/// that implements [`ExactSizeIterator`] or `TrustedLen` may also prevent optimizations.
+/// This is most useful for providing a specific [`Iterator::size_hint`] implementation or hiding
+/// an underlying one for testing. In some cases using this adaptor may allow for optimization,
+/// though if an exact length is known it is recommended to use [`ExactLen`] instead. Using this
+/// adaptor to wrap an iterator that implements [`ExactSizeIterator`] or `TrustedLen` may also
+/// prevent optimizations.
 ///
 /// Note this type is readonly. The field values may be read, but not modified.
 ///
 /// # Fused iterator requirement
 ///
-/// [`HintSize`]s with an unbounded size hint are required to be wrapped around a [`FusedIterator`],
-/// This is required because a valid unbounded upper size hint may be non-zero even after the
-/// iterator returns [`None`], and thus a valid hint cannot be provided if iteration was to resume.
+/// [`HintSize`]s with an bounded size hint (those created by [`HintSize::new`] or [`HintSize::try_new`])
+/// are required to wrap a [`FusedIterator`], because after the iterator completes (returns [`None`]),
+/// this adaptor could no longer guarantee a correct bound upper value if iteration were to resume.
+///
 /// Consider using an unbounded wrapper ([`HintSize::hide`] or [`HintSize::min`]) if the iterator is
-/// fused.
+/// unfused.
 ///
 /// # Safety
 ///
 /// `HintSize` is always safe to use - it will never cause undefined behavior or memory unsafety,
 /// regardless of the hint values provided.
 ///
-/// Validation during construction ensures that hints don't contradict the wrapped iterator's
+/// # Validity
+///
+/// Validation during construction ensures that adaptor does not contradict the wrapped iterator's
 /// guarantees. This is, the adaptor cannot produce a size hint that claims a upper bound less than
 /// the wrapped iterator's lower bound or a lower bound greater than the wrapped iterator's upper
 /// bound. If necessary this validation can be bypassed by wrapping in first [`HintSize::hide`] and
@@ -42,6 +43,11 @@ use crate::*;
 /// Regardless, it is still the caller's responsibility to ensure that the size hints accurately
 /// represent the number of elements remaining in the iterator. Incorrect size hints may cause
 /// incorrect behavior or panics in code that relies on these values.
+///
+/// If constructed with values valid for the wrapped iterator, the returned size hint will always
+/// be valid. However, if the iterator is fused, the bounds of a bounded `HintSize` are not
+/// guaranteed to converge at zero when iteration completes, and may change if a completed iterator
+/// is polled again.
 ///
 /// # Examples
 ///
@@ -143,9 +149,9 @@ impl<I: Iterator> HintSize<I> {
     /// let mut iter = HintSize::try_new(1..5, 2, 6)?;
     /// assert_eq!(iter.size_hint(), (2, Some(6)), "Initial size hint");
     ///
-    /// let err: InvalidSizeHint = HintSize::try_new(1..5, 6, 2).expect_err("lower bound should be > upper bound");
-    /// let err: InvalidSizeHint = HintSize::try_new(1..5, 6, 10).expect_err("hint lower bound > iterator's upper bound");
-    /// let err: InvalidSizeHint = HintSize::try_new(1..5, 1, 3).expect_err("hint upper bound < iterator's lower bound");
+    /// let err: InvalidSizeHint = HintSize::try_new(1..5, 6, 2).expect_err("lower bound is > upper bound");
+    /// let err: InvalidSizeHint = HintSize::try_new(1..5, 6, 10).expect_err("hint lower bound is > iterator's upper bound");
+    /// let err: InvalidSizeHint = HintSize::try_new(1..5, 1, 3).expect_err("hint upper bound is < iterator's lower bound");
     /// # Ok(())
     /// }
     /// ```
@@ -153,8 +159,10 @@ impl<I: Iterator> HintSize<I> {
     pub fn try_new<II>(iterator: II, lower: usize, upper: usize) -> Result<Self, InvalidSizeHint>
     where
         II: IntoIterator<IntoIter = I>,
+        I: FusedIterator,
     {
-        Self::try_new_impl(iterator.into_iter(), SizeHint::try_bounded(lower, upper)?)
+        let hint = SizeHint::try_bounded(lower, upper)?;
+        Self::try_new_impl(iterator.into_iter(), hint)
     }
 
     /// Wraps `iterator` in a new [`HintSize`] with an unbounded size hint based on `lower`.
@@ -193,10 +201,10 @@ impl<I: Iterator> HintSize<I> {
     /// ```rust
     /// # use size_hinter::{HintSize, InvalidSizeHint};
     /// # fn main() -> Result<(), InvalidSizeHint> {
-    /// let iter = HintSize::try_min(1..5, 2).expect("Should be valid");
-    /// assert_eq!(iter.size_hint(), (2, None));
+    /// let iter = HintSize::try_min(1..5, 2)?;
+    /// assert_eq!(iter.size_hint(), (2, None), "Initial size hint reflects lower");
     ///
-    /// let err: InvalidSizeHint = HintSize::try_min(1..5, 6).expect_err("lower bound should be > wrapped iterator's upper bound");
+    /// let err: InvalidSizeHint = HintSize::try_min(1..5, 6).expect_err("lower bound is > wrapped iterator's upper bound");
     /// # Ok(())
     /// # }
     /// ```
@@ -246,13 +254,8 @@ impl<I: Iterator> Iterator for HintSize<I> {
 
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
-        match self.iterator.next() {
-            item @ Some(_) => {
-                self.hint = self.hint.decrement();
-                item
-            }
-            None => None,
-        }
+        self.hint = self.hint.decrement();
+        self.iterator.next()
     }
 
     #[inline]
@@ -264,13 +267,8 @@ impl<I: Iterator> Iterator for HintSize<I> {
 impl<I: DoubleEndedIterator> DoubleEndedIterator for HintSize<I> {
     #[inline]
     fn next_back(&mut self) -> Option<Self::Item> {
-        match self.iterator.next_back() {
-            item @ Some(_) => {
-                self.hint = self.hint.decrement();
-                item
-            }
-            None => None,
-        }
+        self.hint = self.hint.decrement();
+        self.iterator.next_back()
     }
 }
 
