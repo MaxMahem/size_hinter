@@ -1,4 +1,5 @@
 # Changelog
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
@@ -15,8 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `HintSize::try_bounded()` - fallible version of `new()` that returns `Result<Self, InvalidSizeHint>` instead of panicking
 - `HintSize::try_min()` - fallible version of `min()` that returns `Result<Self, InvalidSizeHint>` instead of panicking
 - `ExactLen::try_new()` - fallible version of `new()` that returns `Result<Self, InvalidSizeHint>` instead of panicking
+- `SizeHinter::try_hint_size()` - fallible extension method that returns `Result<HintSize<Self>, InvalidSizeHint>` instead of panicking
+- `SizeHinter::try_hint_min()` - fallible extension method that returns `Result<HintSize<Self>, InvalidSizeHint>` instead of panicking
 
 ### Changed
+
 - **Breaking Change**: `HintSize::new()` renamed to `HintSize::bounded`
   - Migration: change all uses of `HintSize::new()` to `HintSize::bounded()`
 - **Breaking Change**: `HintSize::bounded()`, `HintSize::min()`, and `ExactLen::new()` now validate to prevent provably false bounds
@@ -30,12 +34,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `len` is less than the wrapped iterator's lower bound
     - `len` is greater than the wrapped iterator's upper bound (if present)
   - All adaptor panic of the wrapped iterator's initial size hint is invalid
-  - Migration: Refactor designs that provide provably false claims. 
+  - Migration: Refactor designs that provide provably false claims.
 - `HintSize` now wraps a `SizeHint` instead of a tuple
 
 ## [0.2.0] - 2025-12-23
 
 ### Added
+
 - `no_std` support
 - `forbid(unsafe_code)`
 - `FusedIterator` implementation for `ExactLen`

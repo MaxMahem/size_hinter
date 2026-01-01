@@ -2,7 +2,7 @@
 ///
 ///   next => Some(1), len: 3
 ///   next => Some(2), hint: (5, Some(10))
-macro_rules! iter_state {
+macro_rules! test_iter {
     // (name, initial => len: len, ( method => expected, len: remaining );+ )
     ($name:ident, $initial:expr => len: $len:expr, $( $method:ident => $expected:expr, len: $remaining:expr );+ $(;)?) => {
         #[test]
@@ -37,8 +37,8 @@ macro_rules! iter_state {
 /// (name, initial => hint: initial_hint)
 /// (name, initial => len: initial_len)
 /// (name, initial => panic: expected_msg)
-macro_rules! initial_state {
-    ($name:ident, $iter:expr, hint: $hint:expr) => {
+macro_rules! test_ctor {
+    ($name:ident, $iter:expr => hint: $hint:expr) => {
         #[test]
         fn $name() {
             let iter = $iter;
@@ -47,7 +47,7 @@ macro_rules! initial_state {
         }
     };
 
-    ($name:ident, $iter:expr, len: $expected:expr) => {
+    ($name:ident, $iter:expr => len: $expected:expr) => {
         #[test]
         fn $name() {
             let iter = $iter;
@@ -56,14 +56,22 @@ macro_rules! initial_state {
         }
     };
 
-    ($name:ident, $iter:expr, panic: $expected_msg:expr) => {
+    ($name:ident, $iter:expr => panic: $expected_msg:expr) => {
         #[test]
         #[should_panic(expected = $expected_msg)]
         fn $name() {
             let _ = $iter;
         }
     };
+
+    ($name:ident, $iter:expr => Err) => {
+        #[test]
+        fn $name() {
+            let result = $iter;
+            assert!(result.is_err(), "expected Err, got Ok");
+        }
+    };
 }
 
-pub(crate) use initial_state;
-pub(crate) use iter_state;
+pub(crate) use test_ctor;
+pub(crate) use test_iter;

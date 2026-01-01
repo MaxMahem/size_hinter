@@ -71,6 +71,6 @@ Wrapping an iterator that does not provide a detailed size hint or implement `Ex
 
 `ExactLen` and `HintSize` are always safe to use - they will never cause undefined behavior or memory unsafety, regardless of the values provided.
 
-Both adaptors validate that provided hints/lengths are logical (lower bound <= upper bound) and don't contradict the wrapped iterator's stated bounds. An adaptor can provide a hint or length that introduces new information, such as a new lower bound that is higher than provided one, but cannot claim a new lower bound higher than the wrapped iterator's max bound (if present). 
+Both adaptors validate that provided hints/lengths are logical (lower bound <= upper bound) and don't contradict the wrapped iterator's stated bounds. An adaptor can provide a hint or length that introduces new information, such as a new lower bound that is higher than provided one, but cannot claim a new lower bound higher than the wrapped iterator's max bound (if present).
 
 It is still the caller's responsibility to ensure that the provided hints/lengths are accurate. Inaccurate values may prevent optimizations or cause issues in code that relies on these values for allocation or other decisions.

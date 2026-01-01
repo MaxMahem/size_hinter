@@ -1,4 +1,7 @@
-use core::{iter::FusedIterator, ops::RangeBounds};
+use core::{
+    iter::FusedIterator,
+    ops::{Not, RangeBounds},
+};
 
 use fluent_result::bool::Then;
 
@@ -98,8 +101,9 @@ impl<I: FusedIterator> ExactLen<I> {
     #[inline]
     pub fn try_new(iterator: impl IntoIterator<IntoIter = I>, len: usize) -> Result<Self, InvalidSizeHint> {
         let iterator = iterator.into_iter();
-        let wrapped = SizeHint::try_from(iterator.size_hint()).expect("wrapped iterator size_hint should be valid");
-        (!wrapped.contains(&len)).then_err(InvalidSizeHint).map(|()| Self { iterator, len })
+        let wrapped: SizeHint = iterator.size_hint().try_into().expect("wrapped iterator size_hint should be valid");
+        wrapped.contains(&len).not().then_err(InvalidSizeHint)?;
+        Ok(Self { iterator, len })
     }
 
     /// Consumes the adaptor and returns the underlying iterator.
@@ -124,13 +128,8 @@ impl<I: FusedIterator> Iterator for ExactLen<I> {
 
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
-        match self.iterator.next() {
-            item @ Some(_) => {
-                self.len = self.len.saturating_sub(1);
-                item
-            }
-            None => None,
-        }
+        self.len = self.len.saturating_sub(1);
+        self.iterator.next()
     }
 
     #[inline]
@@ -149,13 +148,8 @@ impl<I: FusedIterator> ExactSizeIterator for ExactLen<I> {
 impl<I: DoubleEndedIterator + FusedIterator> DoubleEndedIterator for ExactLen<I> {
     #[inline]
     fn next_back(&mut self) -> Option<Self::Item> {
-        match self.iterator.next_back() {
-            Some(item) => {
-                self.len = self.len.saturating_sub(1);
-                Some(item)
-            }
-            None => None,
-        }
+        self.len = self.len.saturating_sub(1);
+        self.iterator.next_back()
     }
 }
 

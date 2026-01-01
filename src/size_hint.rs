@@ -1,6 +1,6 @@
 use core::ops::{Bound, Range, RangeBounds, RangeFrom, RangeFull, RangeInclusive, RangeTo, RangeToInclusive};
 
-/// Error type for invalid size hints where the lower bound exceeds the upper bound.
+/// Error type for reporting invalid size hints where the size hint would be empty or invalid.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 #[error("invalid size hint: values describe an invalid or empty range")]
 pub struct InvalidSizeHint;
@@ -141,7 +141,7 @@ impl SizeHint {
     /// Returns `true` if this size hint range overlaps with another size hint range.
     ///
     /// Two ranges overlap if there exists at least one value that could be contained in both.
-    /// This operation is the negation of [`disjoint`], and is also commutative.
+    /// This operation is the negation of [`Self::disjoint`], and is also commutative.
     ///
     /// # Examples
     ///
@@ -166,7 +166,7 @@ impl SizeHint {
     /// Returns `true` if this size hint range is disjoint with another range.
     ///
     /// Two ranges are disjoint if there exists no value that could be contained in both.
-    /// This operation is the negation of [`overlaps`], and is also commutative.
+    /// This operation is the negation of [`Self::overlaps`], and is also commutative.
     ///
     /// # Examples
     ///

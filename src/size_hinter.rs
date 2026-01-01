@@ -13,7 +13,7 @@ pub trait SizeHinter: Iterator + Sized {
     /// `lower` and `upper`.
     ///
     /// This is most useful for testing, but can also enable optimizations if a more accurate
-    /// [`SizeHint`] is available. Prefer [`exact_len`] if the exact number of elements is known.
+    /// [`SizeHint`] is available. Prefer [`Self::exact_len`] if the exact number of elements is known.
     /// This adaptor can also prevent optimizations if the iterator already implements `TrustedLen`.
     ///
     /// It is the caller's responsibility to ensure that `lower` and `upper` are accurate bounds
@@ -76,9 +76,81 @@ pub trait SizeHinter: Iterator + Sized {
         HintSize::min(self, lower)
     }
 
-    /// Wraps this [`Iterator`] in a [`HintSize`] that produces a [`UNIVERSAL_SIZE_HINT`].
+    /// Tries to wrap this [`FusedIterator`] in a [`HintSize`] that produces a [`SizeHint`] based on
+    /// `lower` and `upper`.
     ///
-    /// This implementation, and the [`UNIVERSAL_SIZE_HINT`] it returns, is always correct,
+    /// See [`Self::hint_size`] for more details.
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`InvalidSizeHint`] if:
+    /// - `lower > upper`
+    /// - `upper` is less than this [`Iterator::size_hint`]'s lower bound
+    /// - `lower` is greater than this [`Iterator::size_hint`]'s upper bound (if present)
+    ///
+    /// # Panics
+    ///
+    /// Panics if the wrapped iterator's [`Iterator::size_hint`] is invalid.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use size_hinter::{SizeHinter, InvalidSizeHint};
+    /// # fn main() -> Result<(), InvalidSizeHint> {
+    /// let mut iter = (1..5).try_hint_size(2, 6)?;
+    /// assert_eq!(iter.size_hint(), (2, Some(6)), "Should match initial size hint");
+    /// assert_eq!(iter.next(), Some(1), "Should not change underlying iterator");
+    /// assert_eq!(iter.size_hint(), (1, Some(5)), "Should reflect new state");
+    ///
+    /// let err: InvalidSizeHint = (10..20).try_hint_size(15, 5)
+    ///     .expect_err("Lower bound should not be greater than upper bound");
+    /// # Ok(())
+    /// # }
+    /// ```
+    #[inline]
+    fn try_hint_size(self, lower: usize, upper: usize) -> Result<HintSize<Self>, crate::InvalidSizeHint>
+    where
+        Self: FusedIterator,
+    {
+        HintSize::try_new(self, lower, upper)
+    }
+
+    /// Tries to wrap this [`Iterator`] in a [`HintSize`] that produces a [`SizeHint`] based on `lower`.
+    ///
+    /// See [`Self::hint_min`] for more details.
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`InvalidSizeHint`] if `lower` is greater than the upper bound of this
+    /// [`Iterator::size_hint`] (if present).
+    ///
+    /// # Panics
+    ///
+    /// Panics if the wrapped iterator's [`Iterator::size_hint`] is invalid.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use size_hinter::{SizeHinter, InvalidSizeHint};
+    /// # fn main() -> Result<(), InvalidSizeHint> {
+    /// let mut iter = (1..5).try_hint_min(4)?;
+    /// assert_eq!(iter.size_hint(), (4, None), "Should match initial lower bound");
+    /// assert_eq!(iter.next(), Some(1), "Should not change underlying iterator");
+    /// assert_eq!(iter.size_hint(), (3, None), "Should reflect new lower bound");
+    ///
+    /// let err: InvalidSizeHint = (10..20).try_hint_min(25)
+    ///     .expect_err("Lower bound should not be greater than upper bound");
+    /// # Ok(())
+    /// # }
+    /// ```
+    #[inline]
+    fn try_hint_min(self, lower: usize) -> Result<HintSize<Self>, crate::InvalidSizeHint> {
+        HintSize::try_min(self, lower)
+    }
+
+    /// Wraps this [`Iterator`] in a [`HintSize`] that produces a [`SizeHint::UNIVERSAL`].
+    ///
+    /// This implementation, and the [`SizeHint::UNIVERSAL`] it returns, is always correct,
     /// and never changes. It is most useful for testing.
     ///
     /// # Examples
@@ -104,7 +176,7 @@ pub trait SizeHinter: Iterator + Sized {
     /// which the exact number of elements the iterator will yield is known. This may allow
     /// performance optimizations. However it may also prevent optimizations if the wrapped
     /// iterator already implements `TrustedLen`, even if it does not implement
-    /// [`ExactSizeIterator`]. For example, [`Chain`].
+    /// [`ExactSizeIterator`]. For example, [`Chain`](core::iter::Chain).
     ///
     /// [`ExactLen`] also produces a corresponding [`SizeHint`] based on `len`.
     ///
