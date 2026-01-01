@@ -37,13 +37,59 @@ impl SizeHint {
 
     /// Creates a new size hint with the given lower and optional upper bounds.
     ///
+    /// # Panics
+    ///
+    /// Panics if the upper bound is present and less than the lower bound.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use size_hinter::SizeHint;
+    /// let hint = SizeHint::new(5, Some(10));
+    /// assert_eq!(hint.lower, 5);
+    /// assert_eq!(hint.upper, Some(10));
+    ///```
+    #[inline]
+    #[must_use]
+    pub const fn new(lower: usize, upper: Option<usize>) -> Self {
+        match Self::try_new(lower, upper) {
+            Ok(hint) => hint,
+            Err(_) => panic!("values should describe a valid size hint"),
+        }
+    }
+
+    /// Tries to create a new size hint with the given lower and optional upper bounds.
+    ///
     /// # Errors
     ///
-    /// Returns [`InvalidSizeHint`] if `lower` is greater than `upper`.
+    /// Returns [`InvalidSizeHint`] if the upper bound is present and less than the lower bound.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use size_hinter::{SizeHint, InvalidSizeHint};
+    /// # fn main() -> Result<(), InvalidSizeHint> {
+    /// let hint = SizeHint::try_new(5, Some(10))?;
+    /// assert_eq!(hint.lower, 5);
+    /// assert_eq!(hint.upper, Some(10));
+    ///
+    /// let err: InvalidSizeHint = SizeHint::try_new(10, Some(5)).expect_err("Lower bound is greater than upper bound");
+    /// # Ok(())
+    /// # }
+    ///```
+    #[inline]
+    pub const fn try_new(lower: usize, upper: Option<usize>) -> Result<Self, InvalidSizeHint> {
+        match (lower, upper) {
+            (lower, Some(upper)) if lower > upper => Err(InvalidSizeHint),
+            _ => Ok(Self { lower, upper }),
+        }
+    }
+
+    /// Creates a new size hint with the given lower and optional upper bounds.
     ///
     /// # Panics
     ///
-    /// Panics if the wrapped [`Iterator::size_hint`] is invalid.
+    /// Panics if `lower` is greater than `upper`.
     ///
     /// # Examples
     ///
@@ -55,8 +101,11 @@ impl SizeHint {
     ///```
     #[inline]
     #[must_use]
-    pub fn bounded(lower: usize, upper: usize) -> Self {
-        Self::try_bounded(lower, upper).expect("values should describe a valid size hint")
+    pub const fn bounded(lower: usize, upper: usize) -> Self {
+        match Self::try_bounded(lower, upper) {
+            Ok(hint) => hint,
+            Err(_) => panic!("values should describe a valid size hint"),
+        }
     }
 
     /// Tries to create a new bounded [`SizeHint`] with the given `lower` and `upper` bounds.

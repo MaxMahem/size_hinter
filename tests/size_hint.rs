@@ -66,6 +66,8 @@ macro_rules! transform {
 mod ctor {
     use super::*;
 
+    ctor!(new_valid, SizeHint::new(3, Some(10)) => (3, Some(10)));
+    ctor!(new_invalid, SizeHint::new(10, Some(5)) => panic "values should describe a valid size hint");
     ctor!(try_bounded_valid, SizeHint::try_bounded(3, 10) => ok(3, Some(10)));
     ctor!(try_bounded_invalid, SizeHint::try_bounded(10, 5) => err(InvalidSizeHint));
     ctor!(bounded_valid, SizeHint::bounded(3, 10) => (3, Some(10)));
