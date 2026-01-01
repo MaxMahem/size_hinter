@@ -1,8 +1,8 @@
 /// Unified macro to test iterator property tracking during iteration
-/// Can track either len or hint using labeled syntax:
+///
 ///   next => Some(1), len: 3
 ///   next => Some(2), hint: (5, Some(10))
-macro_rules! test_iter_hint_state {
+macro_rules! test_iter {
     // (name, initial => len: len, ( method => expected, len: remaining );+ )
     ($name:ident, $initial:expr => len: $len:expr, $( $method:ident => $expected:expr, len: $remaining:expr );+ $(;)?) => {
         #[test]
@@ -23,36 +23,55 @@ macro_rules! test_iter_hint_state {
         #[test]
         fn $name() {
             let mut iter = $initial;
-            assert_eq!(iter.size_hint(), $initial_hint, "size_hint should be {:?} at start", $initial_hint);
+            assert_eq!(iter.size_hint(), Into::<(usize, Option<usize>)>::into($initial_hint), "size_hint should be {:?} at start", $initial_hint);
             $(
                 assert_eq!(iter.$method(), $expected, "{} did not return {:?}", stringify!($method), $expected);
-                assert_eq!(iter.size_hint(), $hint, "size_hint should be {:?} after {}", $hint, stringify!($method));
+                assert_eq!(iter.size_hint(), Into::<(usize, Option<usize>)>::into($hint), "size_hint should be {:?} after {}", $hint, stringify!($method));
             )+
         }
     };
 }
 
-macro_rules! test_size_hint {
-    ($name:ident, $iter:expr, $expected:expr) => {
+/// Macro to test initial state/construction of an iterator
+///
+/// (name, initial => hint: initial_hint)
+/// (name, initial => len: initial_len)
+/// (name, initial => panic: expected_msg)
+macro_rules! test_ctor {
+    ($name:ident, $iter:expr => hint: $hint:expr) => {
         #[test]
         fn $name() {
             let iter = $iter;
-            assert_eq!(iter.size_hint(), $expected);
+            assert_eq!(iter.size_hint(), Into::<(usize, Option<usize>)>::into($hint), "expected size_hint to match");
             assert!(matches!(iter.into_inner(), Range { .. }))
         }
     };
-}
 
-macro_rules! test_len {
-    ($name:ident, $iter:expr, $expected:expr) => {
+    ($name:ident, $iter:expr => len: $expected:expr) => {
         #[test]
         fn $name() {
             let iter = $iter;
             assert_eq!(iter.len(), $expected);
+            assert!(matches!(iter.into_inner(), Range { .. }))
+        }
+    };
+
+    ($name:ident, $iter:expr => panic: $expected_msg:expr) => {
+        #[test]
+        #[should_panic(expected = $expected_msg)]
+        fn $name() {
+            let _ = $iter;
+        }
+    };
+
+    ($name:ident, $iter:expr => Err) => {
+        #[test]
+        fn $name() {
+            let result = $iter;
+            assert!(result.is_err(), "expected Err, got Ok");
         }
     };
 }
 
-pub(crate) use test_iter_hint_state;
-pub(crate) use test_len;
-pub(crate) use test_size_hint;
+pub(crate) use test_ctor;
+pub(crate) use test_iter;

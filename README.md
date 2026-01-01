@@ -11,7 +11,7 @@ Iterator adaptors for overriding or specifying exact size hints in Rust.
 
 ## Overview
 
-`size_hinter` provides an extension trait two iterator adaptors that allow you to control `size_hint()` and `len()` behavior of iterators, and a trait for fluently creating these adaptors.
+`size_hinter` provides two iterator adaptors and an extension trait that allow you to override `Iterator::size_hint()` and/or provide a `ExactSizeIterator` implementation for iterators.
 
 - **`ExactLen`**: Wraps an iterator to provide an exact length via `ExactSizeIterator::len()` and a coresponding `Iterator::size_hint()`. This is useful when you know the exact length of an iterator that doesn't normally implement `ExactSizeIterator` (like `Filter`).
 - **`HintSize`**: Wraps an `Iterator` in an adaptor that provides a custom `Iterator::size_hint()` implementation only. This is primarily useful for implementing a fixed universal size hint `(0, None)` for testing.
@@ -45,7 +45,7 @@ assert_eq!(nums.size_hint(), (1, Some(1)), "Size hint should match length");
 
 ### `HintSize` - Overrides Size Hints
 
-`HintSize` provides a custom `Iterator::size_hint()` implementation only. This is primarily useful for implementing a fixed universal size hint `(0, None)` for testing, but any valid size hint can be provided.
+`HintSize` provides a custom `Iterator::size_hint()` implementation. This is primarily useful for implementing a fixed universal size hint `(0, None)` for testing, but any valid size hint can be provided.
 
 ```rust
 use size_hinter::SizeHinter;
@@ -69,4 +69,8 @@ Wrapping an iterator that does not provide a detailed size hint or implement `Ex
 
 ## Safety
 
-Neither `ExactLen` nor `HintSize` should be *unsafe* to use in any scenario, regardless of the values they return. However it is the caller's responsibility to ensure that the length provided are accurate. Providing an incorrect length may lead to incorrect behavior or panics in code that relies on these values.
+`ExactLen` and `HintSize` are always safe to use - they will never cause undefined behavior or memory unsafety, regardless of the values provided.
+
+Both adaptors validate that provided hints/lengths are logical (lower bound <= upper bound) and don't contradict the wrapped iterator's stated bounds. An adaptor can provide a hint or length that introduces new information, such as a new lower bound that is higher than provided one, but cannot claim a new lower bound higher than the wrapped iterator's max bound (if present).
+
+It is still the caller's responsibility to ensure that the provided hints/lengths are accurate. Inaccurate values may prevent optimizations or cause issues in code that relies on these values for allocation or other decisions.
