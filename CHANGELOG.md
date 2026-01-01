@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-01-01
+
+### Added
+
+- `SizeHint::new()` - const constructor for creating a size hint with lower and optional upper bounds
+- `SizeHint::try_new()` - fallible const version of `new()` that returns `Result<Self, InvalidSizeHint>` instead of panicking
+
+### Changed
+
+- All `SizeHint` constructor methods are now `const fn`: `new`, `try_new`, `bounded`, `try_bounded`, `unbounded`, and `exact`
+
 ## [0.3.0] - 2026-01-01
 
 ### Added
