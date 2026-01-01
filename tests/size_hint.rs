@@ -89,6 +89,7 @@ mod try_from_range {
 
     ctor!(valid, SizeHint::try_from(3..8) => ok(3, Some(7)));
     ctor!(empty, SizeHint::try_from(5..5) => err(InvalidSizeHint));
+    ctor!(empty_end, SizeHint::try_from(0..0) => err(InvalidSizeHint));
     ctor!(invalid, SizeHint::try_from(10..5) => err(InvalidSizeHint));
     ctor!(inclusive, SizeHint::try_from(3..=7) => ok(3, Some(7)));
     ctor!(inclusive_invalid, SizeHint::try_from(10..=5) => err(InvalidSizeHint));
@@ -129,6 +130,19 @@ mod overlaps {
     binary_op!(unbounded_with_bounded, overlaps, SizeHint::unbounded(5), SizeHint::bounded(7, 10) => true, true);
     binary_op!(unbounded_no_overlap, overlaps, SizeHint::unbounded(15), SizeHint::bounded(3, 10) => false, false);
     binary_op!(both_unbounded, overlaps, SizeHint::unbounded(5), SizeHint::unbounded(10) => true, true);
+}
+
+mod disjoint {
+    use super::*;
+
+    binary_op!(partial_overlap, disjoint, SizeHint::bounded(3, 6), SizeHint::bounded(5, 10) => false, false);
+    binary_op!(fully_contained, disjoint, SizeHint::bounded(4, 6), SizeHint::bounded(3, 10) => false, false);
+    binary_op!(adjacent_no_overlap, disjoint, SizeHint::bounded(3, 6), SizeHint::bounded(7, 10) => true, true);
+    binary_op!(touching_boundary, disjoint, SizeHint::bounded(3, 6), SizeHint::bounded(6, 10) => false, false);
+    binary_op!(exact_same, disjoint, SizeHint::bounded(5, 5), SizeHint::bounded(5, 5) => false, false);
+    binary_op!(unbounded_with_bounded, disjoint, SizeHint::unbounded(5), SizeHint::bounded(7, 10) => false, false);
+    binary_op!(unbounded_no_overlap, disjoint, SizeHint::unbounded(15), SizeHint::bounded(3, 10) => true, true);
+    binary_op!(both_unbounded, disjoint, SizeHint::unbounded(5), SizeHint::unbounded(10) => false, false);
 }
 
 mod subset_of {
