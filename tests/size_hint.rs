@@ -75,6 +75,7 @@ mod ctor {
     ctor!(default, SizeHint::default() => (0, None));
     ctor!(universal, SizeHint::UNIVERSAL => (0, None));
     ctor!(unbounded, SizeHint::unbounded(42) => (42, None));
+    ctor!(at_most, SizeHint::at_most(42) => (0, Some(42)));
     ctor!(exact, SizeHint::exact(42) => (42, Some(42)));
 }
 
