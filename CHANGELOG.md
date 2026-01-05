@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-01-05
+
+### Added
+
+- `SizeHint::at_most()` - const constructor for creating a size hint with an upper bound and a 0 lower bound.
+
 ## [0.3.1] - 2026-01-01
 
 ### Added

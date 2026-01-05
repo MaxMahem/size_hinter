@@ -20,6 +20,10 @@ Iterator adaptors for overriding or specifying exact size hints in Rust.
 
 This crate is `no_std` compatible and contains no `unsafe` code.
 
+## Installation
+
+It's on [crates.io](https://crates.io/crates/size_hinter).
+
 ## Usage
 
 ### `ExactLen` - Adding Exact Length to Iterators

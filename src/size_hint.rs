@@ -163,6 +163,22 @@ impl SizeHint {
         Self { lower: len, upper: Some(len) }
     }
 
+    /// Creates a new size hint with the given upper bound and a lower bound of 0.
+    ///
+    /// A common use case for this is [`Filter`](core::iter::Filter).
+    ///
+    /// ```rust
+    /// # use size_hinter::SizeHint;
+    /// let hint = SizeHint::at_most(5);
+    /// assert_eq!(hint.lower, 0);
+    /// assert_eq!(hint.upper, Some(5));
+    /// ```
+    #[inline]
+    #[must_use]
+    pub const fn at_most(upper: usize) -> Self {
+        Self { lower: 0, upper: Some(upper) }
+    }
+
     /// Returns the size hint as a tuple `(lower, upper)`.
     #[inline]
     #[must_use]
