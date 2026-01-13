@@ -44,6 +44,16 @@ mod try_min {
 test_ctor!(hidden, TEST_ITER.hide_size() => hint: SizeHint::UNIVERSAL);
 test_ctor!(default, HintSize::<Range<usize>>::default() => hint: SizeHint::UNIVERSAL);
 
+mod panic_on_invalid {
+    use super::*;
+    use size_hinter::InvalidIterator;
+
+    test_ctor!(new, HintSize::new(InvalidIterator, 1, 2) => panic: "iterator's size hint should be valid");
+    test_ctor!(try_new, HintSize::try_new(InvalidIterator, 1, 2) => panic: "iterator's size hint should be valid");
+    test_ctor!(min, HintSize::min(InvalidIterator, 1) => panic: "iterator's size hint should be valid");
+    test_ctor!(try_min, HintSize::try_min(InvalidIterator, 1) => panic: "iterator's size hint should be valid");
+}
+
 mod iter {
     use super::*;
 

@@ -17,6 +17,14 @@ test_ctor!(len_too_large, TEST_ITER.exact_len(6) => panic: "len should be within
 test_ctor!(len_too_small_err, TEST_ITER.try_exact_len(2) => Err);
 test_ctor!(len_too_large_err, TEST_ITER.try_exact_len(6) => Err);
 
+mod panic_on_invalid {
+    use super::*;
+    use size_hinter::InvalidIterator;
+
+    test_ctor!(new, ExactLen::new(InvalidIterator, 1) => panic: "wrapped iterator size_hint should be valid");
+    test_ctor!(try_new, ExactLen::try_new(InvalidIterator, 1) => panic: "wrapped iterator size_hint should be valid");
+}
+
 test_iter!(
     forward_iteration,
     TEST_ITER.exact_len(TEST_LEN) => len: TEST_LEN,

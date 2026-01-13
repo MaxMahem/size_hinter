@@ -1,6 +1,6 @@
 [package]
 name = "size_hinter"
-version = "0.3.2"
+version = "0.3.3"
 edition = "2024"
 description = "Iterator adaptors allowing overriding or specifying size_hint."
 repository = "https://github.com/MaxMahem/size_hinter"
