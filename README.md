@@ -16,6 +16,7 @@ Iterator adaptors for overriding or specifying exact size hints in Rust.
 - **`SizeHint`**: An immutable type representing a size hint with strong guarantees about bounds validity (`lower <= upper`), providing additional functionality and conversions.
 - **`ExactLen`**: Wraps an iterator to provide an exact length via `ExactSizeIterator::len()` and a coresponding `Iterator::size_hint()`. This is useful when you know the exact length of an iterator that doesn't normally implement `ExactSizeIterator` (like `Filter`).
 - **`HintSize`**: Wraps an `Iterator` in an adaptor that provides a custom `Iterator::size_hint()` implementation only. This is primarily useful for implementing a fixed universal size hint `(0, None)` for testing.
+- **`InvalidIterator`**: An iterator that reports an invalid size hint `(lower > upper)`.
 - **`SizeHinter`**: An extension trait for fluently creating these adaptors.
 
 This crate is `no_std` compatible and contains no `unsafe` code.
