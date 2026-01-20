@@ -17,4 +17,4 @@ rust-version = "1.85.1"
 fluent_result = { version = "0.10.1", default-features = false }
 readonly = "0.2.13"
 sealed = "0.6.0"
-thiserror = { version = "2.0.17", default-features = false }
+thiserror = { version = "2.0.18", default-features = false }
