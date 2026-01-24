@@ -73,5 +73,23 @@ macro_rules! test_ctor {
     };
 }
 
+/// Macro to create a test that expects a panic with a specific message
+///
+/// Usage: `panics!(test_name, code_to_panic, "expected panic message");`
+#[allow(unused_macros)]
+macro_rules! panics {
+    ($name:ident, $code:expr, $msg:literal) => {
+        #[test]
+        #[should_panic(expected = $msg)]
+        fn $name() {
+            $code;
+        }
+    };
+}
+
+#[allow(unused_imports)]
+pub(crate) use panics;
+#[allow(unused_imports)]
 pub(crate) use test_ctor;
+#[allow(unused_imports)]
 pub(crate) use test_iter;

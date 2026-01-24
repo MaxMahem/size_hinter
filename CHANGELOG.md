@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-01-24
+
+### Changed
+
+- **Breaking Change**: `InvalidIterator` now takes a generic type parameter `T` (defaulted to `()`) to specify the item type.
+  - It is no longer a unit struct constant. Construct it using `InvalidIterator::new()` or `InvalidIterator::default()` if you need to be generic over the item type, or just use `InvalidIterator::INSTANCE` if the type is statically known.
+- Implemented `DoubleEndedIterator` for `InvalidIterator` (panics on `next_back`).
+- Added associated constant `InvalidIterator::INSTANCE` (value: `InvalidIterator<()>`) for const context usage.
+
 ## [0.3.3] - 2026-01-13
 
 ### Added
