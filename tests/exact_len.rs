@@ -19,10 +19,10 @@ test_ctor!(len_too_large_err, TEST_ITER.try_exact_len(6) => Err);
 
 mod panic_on_invalid {
     use super::*;
-    use size_hinter::InvalidIterator;
+    use size_hinter::INVALID_UNIT_ITERATOR;
 
-    test_ctor!(new, ExactLen::new(InvalidIterator, 1) => panic: "wrapped iterator size_hint should be valid");
-    test_ctor!(try_new, ExactLen::try_new(InvalidIterator, 1) => panic: "wrapped iterator size_hint should be valid");
+    test_ctor!(new, ExactLen::new(INVALID_UNIT_ITERATOR, 1) => panic: "wrapped iterator size_hint should be valid");
+    test_ctor!(try_new, ExactLen::try_new(INVALID_UNIT_ITERATOR, 1) => panic: "wrapped iterator size_hint should be valid");
 }
 
 test_iter!(
