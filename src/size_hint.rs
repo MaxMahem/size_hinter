@@ -179,7 +179,45 @@ impl SizeHint {
         Self { lower: 0, upper: Some(upper) }
     }
 
+    /// Returns the inclusive lower bound of the size hint.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use size_hinter::SizeHint;
+    /// let hint = SizeHint::new(5, Some(10));
+    /// assert_eq!(hint.lower(), 5);
+    /// ```
+    #[inline]
+    #[must_use]
+    pub const fn lower(self) -> usize {
+        self.lower
+    }
+
+    /// Returns the optional inclusive upper bound of the size hint.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use size_hinter::SizeHint;
+    /// let hint = SizeHint::new(5, Some(10));
+    /// assert_eq!(hint.upper(), Some(10));
+    /// ```
+    #[inline]
+    #[must_use]
+    pub const fn upper(self) -> Option<usize> {
+        self.upper
+    }
+
     /// Returns the size hint as a tuple `(lower, upper)`.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use size_hinter::SizeHint;
+    /// let hint = SizeHint::new(5, Some(10));
+    /// assert_eq!(hint.as_hint(), (5, Some(10)));
+    /// ```
     #[inline]
     #[must_use]
     pub const fn as_hint(self) -> (usize, Option<usize>) {
