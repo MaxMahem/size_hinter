@@ -194,3 +194,21 @@ mod partial_eq {
         assert_eq!((5, None), hint);
     }
 }
+
+mod accessors {
+    use super::*;
+
+    transform!(lower_bounded, SizeHint::bounded(5, 10), lower() == 5);
+    transform!(lower_unbounded, SizeHint::unbounded(5), lower() == 5);
+    transform!(upper_bounded, SizeHint::bounded(5, 10), upper() == Some(10));
+    transform!(upper_unbounded, SizeHint::unbounded(5), upper() == None);
+
+    #[test]
+    fn const_context() {
+        const HINT: SizeHint = SizeHint::new(10, Some(20));
+        const LOWER: usize = HINT.lower();
+        const UPPER: Option<usize> = HINT.upper();
+        assert_eq!(LOWER, 10);
+        assert_eq!(UPPER, Some(20));
+    }
+}
