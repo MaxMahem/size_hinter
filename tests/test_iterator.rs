@@ -8,10 +8,24 @@ fn new() {
     assert_eq!(iter.size_hint(), (5, Some(10)));
 }
 
+const EXACT_LEN: usize = 5;
+
 #[test]
 fn exact() {
-    let iter = TestIterator::<()>::exact(5);
-    assert_eq!(iter.size_hint(), (5, Some(5)));
+    let iter = TestIterator::<()>::exact(EXACT_LEN);
+    assert_eq!(iter.size_hint(), (EXACT_LEN, Some(EXACT_LEN)));
+}
+
+#[test]
+fn exact_len() {
+    let iter = TestIterator::<()>::exact(EXACT_LEN);
+    assert_eq!(iter.len(), EXACT_LEN);
+}
+
+#[test]
+fn invalid_size_hint_is_invalid() {
+    let (lower, upper) = TestIterator::<()>::invalid().size_hint();
+    assert!(lower > upper.unwrap(), "Size hint should be invalid");
 }
 
 mod panic {
@@ -20,10 +34,4 @@ mod panic {
     macros::panics!(on_next, TestIterator::<()>::invalid().next(), "TestIterator is not iteratable");
     macros::panics!(on_next_back, TestIterator::<()>::invalid().next_back(), "TestIterator is not iteratable");
     macros::panics!(invalid_len, TestIterator::<()>::invalid().len(), "Inexact size hint");
-}
-
-#[test]
-fn invalid_size_hint_is_invalid() {
-    let (lower, upper) = TestIterator::<()>::invalid().size_hint();
-    assert!(lower > upper.unwrap(), "Size hint should be invalid");
 }
