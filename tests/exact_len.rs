@@ -1,4 +1,3 @@
-#[allow(unused_macros)]
 mod macros;
 
 use macros::*;

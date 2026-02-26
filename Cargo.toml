@@ -1,13 +1,13 @@
 [package]
 name = "size_hinter"
-version = "0.4.1"
+version = "0.4.2"
 edition = "2024"
 description = "Iterator adaptors allowing overriding or specifying size_hint."
 repository = "https://github.com/MaxMahem/size_hinter"
 documentation = "https://docs.rs/size_hinter"
 homepage = "https://github.com/MaxMahem/size_hinter"
 license = "MIT OR Apache-2.0"
-authors = [ "Austin Stanley <MaxTMahem@gmail.com>" ]
+authors = ["Austin Stanley <MaxTMahem@gmail.com>"]
 readme = "README.md"
 keywords = ["iterator", "size-hint", "exact-size", "adaptor", "no-std"]
 categories = ["rust-patterns"]
@@ -16,5 +16,4 @@ rust-version = "1.85.1"
 [dependencies]
 fluent_result = { version = "0.10.1", default-features = false }
 readonly = "0.2.13"
-sealed = "0.6.0"
-thiserror = { version = "2.0.17", default-features = false }
+thiserror = { version = "2.0.18", default-features = false }

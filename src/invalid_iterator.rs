@@ -28,6 +28,9 @@ impl<T> InvalidIterator<T> {
     /// A constant instance of `InvalidIterator`.
     pub const DEFAULT: Self = Self::new();
 
+    /// The invalid size hint this iterator returns.
+    pub const INVALID_SIZE_HINT: (usize, Option<usize>) = (10, Some(5));
+
     /// Creates a new `InvalidIterator`.
     #[must_use]
     pub const fn new() -> Self {
@@ -40,20 +43,27 @@ impl<T> Iterator for InvalidIterator<T> {
 
     /// Always panics.
     fn next(&mut self) -> Option<Self::Item> {
-        panic!("next called on InvalidIterator")
+        unimplemented!("InvalidIterator is not iteratable");
     }
 
     /// Always returns an invalid size hint, with lower bound > upper bound.
     fn size_hint(&self) -> (usize, Option<usize>) {
-        (10, Some(5))
+        Self::INVALID_SIZE_HINT
     }
 }
 
 impl<T> DoubleEndedIterator for InvalidIterator<T> {
     /// Always panics.
     fn next_back(&mut self) -> Option<Self::Item> {
-        panic!("next_back called on InvalidIterator")
+        unimplemented!("InvalidIterator is not iteratable");
     }
 }
 
 impl<T> FusedIterator for InvalidIterator<T> {}
+
+impl<T> ExactSizeIterator for InvalidIterator<T> {
+    /// Always panics.
+    fn len(&self) -> usize {
+        unimplemented!("InvalidIterator does not have a valid len");
+    }
+}

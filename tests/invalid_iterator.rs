@@ -1,10 +1,10 @@
-#[allow(unused_macros)]
 mod macros;
 
 use size_hinter::InvalidIterator;
 
-macros::panics!(panics_on_next, InvalidIterator::<()>::new().next(), "next called on InvalidIterator");
-macros::panics!(panics_on_next_back, InvalidIterator::<()>::new().next_back(), "next_back called on InvalidIterator");
+macros::panics!(panics_on_next, InvalidIterator::<()>::new().next(), "InvalidIterator is not iteratable");
+macros::panics!(panics_on_next_back, InvalidIterator::<()>::new().next_back(), "InvalidIterator is not iteratable");
+macros::panics!(panics_on_len, InvalidIterator::<()>::new().len(), "InvalidIterator does not have a valid len");
 
 #[test]
 fn reports_invalid_size_hint() {

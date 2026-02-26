@@ -7,7 +7,6 @@ use crate::*;
 
 /// Extension trait for [`Iterator`] and [`FusedIterator`] to create iterators with custom
 /// [`Iterator::size_hint`] and/or [`ExactSizeIterator::len`] implementations.
-#[sealed::sealed]
 pub trait SizeHinter: Iterator + Sized {
     /// Wraps this [`FusedIterator`] in a [`HintSize`] that produces a [`SizeHint`] based on
     /// `lower` and `upper`.
@@ -249,5 +248,4 @@ pub trait SizeHinter: Iterator + Sized {
     }
 }
 
-#[sealed::sealed]
 impl<I: Iterator> SizeHinter for I {}
