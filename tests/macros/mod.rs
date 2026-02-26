@@ -1,3 +1,5 @@
+#![allow(unused_macros)]
+
 /// Unified macro to test iterator property tracking during iteration
 ///
 ///   next => Some(1), len: 3

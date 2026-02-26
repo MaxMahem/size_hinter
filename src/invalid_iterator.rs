@@ -1,10 +1,13 @@
 use core::iter::FusedIterator;
 use core::marker::PhantomData;
 
-/// A [`Iterator`] that reports an invalid (empty) size hint, with lower bound > upper bound.
+/// A [`Iterator`] that reports an invalid size hint,
+/// with lower bound > upper bound.
 ///
 /// This is useful for testing how consumers handle invalid size hints.
-/// It panics when [`Self::next`] or [`Self::next_back`] is called,
+/// This type implements [`FusedIterator`], [`DoubleEndedIterator`],
+/// and [`ExactSizeIterator`], but is not iterable. It panics when
+/// [`Self::next`], [`Self::next_back`], or [`Self::len`] is called,
 /// and returns an invalid size hint for [`Self::size_hint`].
 ///
 /// If the type parameter is not important, consider using [`INVALID_UNIT_ITERATOR`].
@@ -28,6 +31,9 @@ impl<T> InvalidIterator<T> {
     /// A constant instance of `InvalidIterator`.
     pub const DEFAULT: Self = Self::new();
 
+    /// The invalid size hint this iterator returns.
+    pub const INVALID_SIZE_HINT: (usize, Option<usize>) = (10, Some(5));
+
     /// Creates a new `InvalidIterator`.
     #[must_use]
     pub const fn new() -> Self {
@@ -40,20 +46,27 @@ impl<T> Iterator for InvalidIterator<T> {
 
     /// Always panics.
     fn next(&mut self) -> Option<Self::Item> {
-        panic!("next called on InvalidIterator")
+        unimplemented!("InvalidIterator is not iteratable");
     }
 
     /// Always returns an invalid size hint, with lower bound > upper bound.
     fn size_hint(&self) -> (usize, Option<usize>) {
-        (10, Some(5))
+        Self::INVALID_SIZE_HINT
     }
 }
 
 impl<T> DoubleEndedIterator for InvalidIterator<T> {
     /// Always panics.
     fn next_back(&mut self) -> Option<Self::Item> {
-        panic!("next_back called on InvalidIterator")
+        unimplemented!("InvalidIterator is not iteratable");
     }
 }
 
 impl<T> FusedIterator for InvalidIterator<T> {}
+
+impl<T> ExactSizeIterator for InvalidIterator<T> {
+    /// Always panics.
+    fn len(&self) -> usize {
+        unimplemented!("InvalidIterator does not have a valid len");
+    }
+}
