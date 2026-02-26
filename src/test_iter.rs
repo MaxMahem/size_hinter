@@ -1,4 +1,4 @@
-use core::iter::FusedIterator;
+use core::{iter::FusedIterator, panic};
 
 use crate::SizeHint;
 
@@ -43,6 +43,20 @@ impl<T> TestIterator<T> {
         Self { size_hint, _marker: core::marker::PhantomData }
     }
 
+    /// Creates a new [`TestIterator`] with an exact size hint.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use size_hinter::TestIterator;
+    /// let iter = TestIterator::<()>::exact(5);
+    /// assert_eq!(iter.size_hint(), (5, Some(5)));
+    /// ```
+    #[must_use]
+    pub const fn exact(len: usize) -> Self {
+        Self::new((len, Some(len)))
+    }
+
     /// Creates a new [`TestIterator`] with an invalid size hint.
     ///
     /// # Examples
@@ -83,8 +97,16 @@ impl<T> Iterator for TestIterator<T> {
 impl<T> FusedIterator for TestIterator<T> {}
 
 impl<T> ExactSizeIterator for TestIterator<T> {
+    /// Returns the exact length of the iterator.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the size hint is not exact.
     fn len(&self) -> usize {
-        unimplemented!("TestIterator does not have a valid len");
+        match self.size_hint() {
+            (lower, Some(upper)) if lower == upper => lower,
+            _ => panic!("Inexact size hint"),
+        }
     }
 }
 

@@ -8,9 +8,19 @@ fn new() {
     assert_eq!(iter.size_hint(), (5, Some(10)));
 }
 
-macros::panics!(panics_on_next, TestIterator::<()>::invalid().next(), "TestIterator is not iteratable");
-macros::panics!(panics_on_next_back, TestIterator::<()>::invalid().next_back(), "TestIterator is not iteratable");
-macros::panics!(panics_on_len, TestIterator::<()>::invalid().len(), "TestIterator does not have a valid len");
+#[test]
+fn exact() {
+    let iter = TestIterator::<()>::exact(5);
+    assert_eq!(iter.size_hint(), (5, Some(5)));
+}
+
+mod panic {
+    use super::*;
+
+    macros::panics!(on_next, TestIterator::<()>::invalid().next(), "TestIterator is not iteratable");
+    macros::panics!(on_next_back, TestIterator::<()>::invalid().next_back(), "TestIterator is not iteratable");
+    macros::panics!(invalid_len, TestIterator::<()>::invalid().len(), "Inexact size hint");
+}
 
 #[test]
 fn invalid_size_hint_is_invalid() {

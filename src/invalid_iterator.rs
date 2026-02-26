@@ -1,10 +1,13 @@
 use core::iter::FusedIterator;
 use core::marker::PhantomData;
 
-/// A [`Iterator`] that reports an invalid (empty) size hint, with lower bound > upper bound.
+/// A [`Iterator`] that reports an invalid size hint,
+/// with lower bound > upper bound.
 ///
 /// This is useful for testing how consumers handle invalid size hints.
-/// It panics when [`Self::next`] or [`Self::next_back`] is called,
+/// This type implements [`FusedIterator`], [`DoubleEndedIterator`],
+/// and [`ExactSizeIterator`], but is not iterable. It panics when
+/// [`Self::next`], [`Self::next_back`], or [`Self::len`] is called,
 /// and returns an invalid size hint for [`Self::size_hint`].
 ///
 /// If the type parameter is not important, consider using [`INVALID_UNIT_ITERATOR`].
