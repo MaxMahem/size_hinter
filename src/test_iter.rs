@@ -14,7 +14,7 @@ use crate::SizeHint;
 ///
 /// ```rust
 /// # use size_hinter::TestIterator;
-/// let iter = TestIterator::new((5, Some(10)));
+/// let iter = TestIterator::<()>::new((5, Some(10)));
 /// assert_eq!(iter.size_hint(), (5, Some(10)));
 /// ```
 pub struct TestIterator<T = ()> {
@@ -35,7 +35,7 @@ impl<T> TestIterator<T> {
     ///
     /// ```rust
     /// # use size_hinter::TestIterator;
-    /// let iter = TestIterator::new((5, Some(10)));
+    /// let iter = TestIterator::<()>::new((5, Some(10)));
     /// assert_eq!(iter.size_hint(), (5, Some(10)));
     /// ```
     #[must_use]
@@ -49,7 +49,7 @@ impl<T> TestIterator<T> {
     ///
     /// ```rust
     /// # use size_hinter::TestIterator;
-    /// let iter = TestIterator::invalid();
+    /// let iter = TestIterator::<()>::invalid();
     /// let (lower, upper) = iter.size_hint();
     /// assert!(lower > upper.unwrap(), "Size hint should be invalid");
     /// ```
